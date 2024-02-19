@@ -44,15 +44,20 @@ sale6 = Sale(price=350, date_sale=('2022-03-24'), count=4, stock=stock1)
 sale7 = Sale(price=500, date_sale=('2022-05-20'), count=4, stock=stock1)
 sale8 = Sale(price=500, date_sale=('2022-11-11'), count=5, stock=stock2)
 session.add_all([sale1, sale2, sale3, sale4, sale5, sale6, sale7, sale8])
-
 session.commit()
-p_name = input(f'Введите имя автора- ')
 
-result = (session.query(Book.title, Shop.name, Sale.price, Sale.date_sale)
-            .join(Publisher).join(Stock).join(Shop).join(Sale)).filter(Publisher.name == p_name)
+def get_shops(name):
+    result = (session.query(Book.title, Shop.name, Sale.price, Sale.date_sale)
+              .join(Publisher).join(Stock).join(Shop).join(Sale))
+    if name.isdigit():
+        result = result.filter(Publisher.id == name)
+    else:
+        result = result.filter(Publisher.name == name)
+    for r in result.all():
+        print(f'{r[0]:<30} | {r[1]:<15} | {r[2]:<8} | {r[3]}')
 
-for r in result.all():
-    print(f'{r[0]} | {r[1]} | {r[2]} | {r[3]}')
-
-session.close()
+if __name__ == '__main__':
+    name = input('Автор - ')
+    get_shops(name)
+    session.close()
 
